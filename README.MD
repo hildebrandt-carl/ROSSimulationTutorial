@@ -235,6 +235,100 @@ $ rostopic echo /map
 ### Creating a world in Gazebo
 
 
+The files which are being used are SDF files, such as this one ```empty.world```.
+
+```
+<sdf version="1.4">
+  <world name="default">
+
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>150</iters>
+          <precon_iters>0</precon_iters>
+          <sor>1.400000</sor>
+          <use_dynamic_moi_rescaling>1</use_dynamic_moi_rescaling>
+        </solver>
+        <constraints>
+          <cfm>0.00001</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>2000.000000</contact_max_correcting_vel>
+          <contact_surface_layer>0.01000</contact_surface_layer>
+        </constraints>
+      </ode>
+    </physics>
+  </world>
+
+</sdf>
+
+```
+
+Lets see if we can add our own components to the empty world. Lets create our own world. For simplicity lets modify ```empty.world```. Lets thus make a backup of the original ```empty.world``` so we can return to it once we are finished.
+
+```
+$ cp catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty.world catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty_orig.world
+```
+
+Now lets edit ```empty.world``` by including a gas station between the ground plane and the physics tag. A gas station can be added using:
+
+```
+  <include>
+    <uri>model://gas_station</uri>
+    <name>gas_station</name>
+    <pose>-2.0 7.0 0 0 0 0</pose>
+  </include>
+```
+
+Your ```empty.world``` should look something like this now.
+
+```
+    ...
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://gas_station</uri>
+      <name>gas_station</name>
+      <pose>-2.0 7.0 0 0 0 0</pose>
+    </include>
+
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      ...
+```
+
+Lets see what that looks like. Lets run the code which launches gazebo with the empty world.
+
+```
+$ export TURTLEBOT3_MODEL=waffle_pi
+$ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+```
+
+Talk about adding blocks and then talk about creating your own models
 
 
 
@@ -247,5 +341,5 @@ $ rostopic echo /map
 ## Acknowledgments
 
 * http://emanual.robotis.com/docs/en/platform/turtlebot3/overview/
-
+* http://gazebosim.org/tutorials?tut=ros_roslaunch&cat=connect_ros
 
