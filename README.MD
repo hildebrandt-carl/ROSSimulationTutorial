@@ -89,69 +89,163 @@ We can double check its publishing correctly using:
 $ rostopic echo /scan
 ```
 
+You will notice that all ranges are inf. That is because the robot is being simulated in an open world, with no obstacles in sight. Lets manually add an obstacle. To do that click the box icon in the toolbar of gazebo.
 
-We can see it is of type LaserScan. Lets try and visualize it using RViz.
+
+Lets try and visualize the data in RViz. To open RViz we can run the following command
+
+```
+$ export TURTLEBOT3_MODEL=waffle_pi
+$ roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch
+```
+
+Lets see if we can understand what we did. The first thing we launched was the ```turltebot3_empty_world.launch```. Inside that file we will see the following:
+
+```
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/empty.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+</launch>
+```
+
+We can see we first create an arguement named model. With a starting position 0,0,0. If we wanted to move the robot we could change the starting position. The next include includes the ```empty_world.launch``` file. You can find this file in:
+
+```
+$ cd /opt/ros/kinetic/share/gazebo_ros/launch/
+$ cat empty_world.launch
+```
+
+Finally the gazebo node is launched. The second file is the customized RViz launch file ```turtlebot3_gazebo_rviz.launch```. Inside that file we will see the following:
+
+```
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+
+  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)"/>
+  </include>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot3_gazebo)/rviz/turtlebot3_gazebo_model.rviz"/>
+</launch>
+```
+
+Inside this file we can see that we are launching the node ```rviz``` with a custom save file ```turtlebot3_gazebo_model.rviz```. Inside that is where all the correct setting have been checked which allow RViz to straight away know what you want to display. Lets see if we can mimic this behaviour without using the launch file. Launch RViz by default:
 
 ```
 $ rosrun rviz rviz
 ```
 
-Click on Add. Then 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### And coding style tests
-
-Explain what these tests test and why
+Firstly change the Fixed Frame from map to odom. Next lets say we want to visualize the laser scan data. We can do that by clicking add on the bottom left and then selecting laser scan. Once you had the laser scan topic, next you need to change the scan topic to ```/scan```. You will notice that we get an error. That base_scan does not exist.
 
 ```
-Give an example
+$ roslaunch turtlebot3_bringup turtlebot3_remote.launch
 ```
 
-## Deployment
+Why did it do that? It publishes the coordinate transformation such as base_footprint and odom and base_todo
 
-Add additional notes about how to deploy this on a live system
 
-## Built With
+### Driving the Simulation
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+Lets now see how we could drive the robot around a room. To do this lets open a more complex world.
 
-## Contributing
+```
+$ export TURTLEBOT3_MODEL=waffle_pi
+$ roslaunch turtlebot3_gazebo turtlebot3_autorace.launch
+```
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+In another terminal launch the node which takes the keyboard commands and converts them into velocity commands for the robot:
 
-## Versioning
+```
+$ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+```
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+Lets see if we can visualize data while driving around. We will use the preconfigured rviz launch file.
+
+```
+$ export TURTLEBOT3_MODEL=waffle_pi
+$ roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch
+```
+
+### Mapping
+
+We are also able to create maps using RViz and Gazebo. This example has an implementation of similtaneous localization and mapping [SLAM](https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping). Lets see how it works and if we can visualize the data in RViz.
+
+```
+export TURTLEBOT3_MODEL=waffle_pi
+roslaunch turtlebot3_gazebo turtlebot3_house.launch
+```
+
+Lets launch the slam visualization
+
+```
+$ export TURTLEBOT3_MODEL=waffle_pi
+$ roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
+```
+
+We will notice that the robot is now creating a map object as well as displaying the laser scanner. Lets see what happens if we drive around the room. To drive launch the teleop package.
+
+```
+$ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+```
+
+We can see we are able to map a house using our robot. For this tutorial I wont be going into the details of SLAM, however lets figure out how it was plotted to RViz. The first thing we will notice is that it is published to a ```/map``` topic. Lets see what type of message it is publishing:
+
+
+```
+$ rostopic info /map
+```
+
+We will notice it is of type [nav_msgs/OccupancyGrid](http://docs.ros.org/melodic/api/nav_msgs/html/msg/OccupancyGrid.html). I have included some of the documentation below:
+
+```
+# This represents a 2-D grid map, in which each cell represents the probability of
+# occupancy.
+
+Header header 
+
+#MetaData for the map
+MapMetaData info
+
+# The map data, in row-major order, starting with (0,0).  Occupancy
+# probabilities are in the range [0,100].  Unknown is -1.
+int8[] data
+```
+
+That makes sense so we are expecting a 2D array with probabilities between 0-100 of whether or not an object is there. Lets see if we can see this in on the map topic. We can view the raw map topic using:
+
+```
+$ rostopic echo /map
+```
+
+### Creating a world in Gazebo
+
+
+
+
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Carl Hildebrandt** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* http://emanual.robotis.com/docs/en/platform/turtlebot3/overview/
+
 
