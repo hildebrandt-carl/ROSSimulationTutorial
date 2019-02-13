@@ -232,10 +232,131 @@ That makes sense so we are expecting a 2D array with probabilities between 0-100
 $ rostopic echo /map
 ```
 
-### Creating a world in Gazebo
+### Creating your world
+
+We are able to create our own worlds in Gazebo. World files contain all the informaiton about the size of the objects. The colour of the objects. The collision box of an object. There are two ways to create this world. We could programatically build the world, or we can use the built in editor to create the world. Lets get into the basics of creating a world programatically, for more complex scenarios refer to the [SDF file documentation](http://sdformat.org/spec?elem=world).
+
+```
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <model name="box">
+    <pose>1.4 0.8 0.14 0 0 0</pose>
+    <static>true</static>
+    <link name='link_box'>
+        <pose>0 0 0 0 0 0</pose>
+        <collision name="collision_box">
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+                  <box>
+                    <size>1 2 1.3</size>
+                  </box>
+                </geometry>
+            </collision>
+
+            <visual name="visual_box">
+            <geometry>
+                  <box>
+                    <size>1 2 1.3</size>
+                  </box>
+                </geometry>
+            </visual>
+
+        <self_collide>0</self_collide>      
+        <gravity>1</gravity>
+    </link>
+    </model>
+
+  </world>
+</sdf>
+```
+
+http://gazebosim.org/tutorials?tut=plugins_world
 
 
-The files which are being used are SDF files, such as this one ```empty.world```.
+
+The other way to do it is to create it using the editor. To create a world in the editor simply run:
+
+```
+$ roslaunch gazebo_ros empty_world.launch
+```
+
+
+### Passing Arguments to the launch file
+
+We are able to pass our launch files arguments. Lets look at what kind of arguments we are able to send our empty world launch file. I have attached the launch file below:
+
+```
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>z
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/empty.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+</launch>
+```
+
+You will notice there are two sets of arguments. The first set are the arguments for this launch file, the second set of arguements are for another launch file that this launch files calls. To pass in your own value for the arguments run the following command:
+
+```
+$ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch z_pos:="2.0" x_pos:="5.0"
+```
+
+You will now notice that the robot now spawns 2 meters off the ground and 5 meters in the X direction. Lets say we wanted to change the world using an argument how could we go about doing that? We would have to add an arguement to the launch file which is then passed to the ```empty_world``` launch file. To do this add an arguement named ```w_name``` to your launch file. Set the default value of ```w_name``` to the exact same value of ```world_name``` in he ```empty_world``` launch file. We then can pass ```w_name``` to ```world_name``` by setting its value to that of ```w_name```. This is how your launch file should look after the changes.
+
+```
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="w_name" default="$(find turtlebot3_gazebo)/worlds/empty.world"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg w_name)"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+</launch>
+
+```
+
+To run this launch file we can use the following command:
+
+```
+$ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch w_name:="{PATH TO DIRECTORY}/worlds/empty.world"
+```
+
+### Loading Models into Gazebo
+
+**NOTE** I will be using the previous tutorial to change the world using arguements
+
+Lets take a look at the world files. World files are in a SDF format, such as this one ```empty.world```.
 
 ```
 <sdf version="1.4">
@@ -283,13 +404,13 @@ The files which are being used are SDF files, such as this one ```empty.world```
 
 ```
 
-Lets see if we can add our own components to the empty world. Lets create our own world. For simplicity lets modify ```empty.world```. Lets thus make a backup of the original ```empty.world``` so we can return to it once we are finished.
+Lets see if we can add our own components to the empty world. Lets create our own world. To do this we need to copy ```empty.world``` to a new file which we will add the components to. To do this run:
 
 ```
-$ cp catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty.world catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty_orig.world
+$ cp catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty.world catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty_gas.world
 ```
 
-Now lets edit ```empty.world``` by including a gas station between the ground plane and the physics tag. A gas station can be added using:
+Now lets edit ```empty_gas.world``` by including a gas station between the ground plane and the physics tag. A gas station can be added using:
 
 ```
   <include>
@@ -299,7 +420,7 @@ Now lets edit ```empty.world``` by including a gas station between the ground pl
   </include>
 ```
 
-Your ```empty.world``` should look something like this now.
+Your ```empty_gas.world``` should look something like this now.
 
 ```
     ...
@@ -325,21 +446,20 @@ Lets see what that looks like. Lets run the code which launches gazebo with the 
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
-$ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+$ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch w_name:="{PATH TO DIRECTORY}/worlds/empty_gas.world"
 ```
-
-Talk about adding blocks and then talk about creating your own models
-
-
 
 ## Authors
 
 * **Carl Hildebrandt** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
 
-
-
 ## Acknowledgments
 
 * http://emanual.robotis.com/docs/en/platform/turtlebot3/overview/
 * http://gazebosim.org/tutorials?tut=ros_roslaunch&cat=connect_ros
+* http://wiki.ros.org/roslaunch/XML/arg
+* http://gazebosim.org/tutorials?tut=ros_roslaunch#UsingroslaunchtoOpenWorldModels
+* http://sdformat.org/spec?elem=world
+* http://learn.turtlebot.com/2015/02/03/6/
+* http://gazebosim.org/tutorials?tut=plugins_world
 
