@@ -9,7 +9,7 @@ I believe the best way to learn something is through having examples of it and p
 This tutorial is split into three main sections:
 
 * Prerequisites
-* Instalation
+* Installation
 * Examples
 
 The examples are taken from working knowledge of ROS and the tutorials described in the **Acknowledgement** section. The following examples have been given:
@@ -31,7 +31,7 @@ You will need a working version of ROS. This tutorial was tried and tested in [R
 $ ls /opt/ros
 ```
 
-### Instalation
+### Installation
 
 You first will need to install all of the dependencies.
 
