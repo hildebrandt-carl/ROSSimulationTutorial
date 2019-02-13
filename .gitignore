@@ -3,3 +3,7 @@ catkin_ws/devel/*
 catkin_ws/build/*
 
 .DS_Store
+
+.catkin_workspace
+
+catkin_ws/CMakeLists.txt
