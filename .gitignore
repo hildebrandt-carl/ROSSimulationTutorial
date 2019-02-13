@@ -1,2 +1,5 @@
+# Catkin Files
 catkin_ws/devel/*
 catkin_ws/build/*
+
+.DS_Store
