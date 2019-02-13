@@ -4,7 +4,7 @@ This is a tutorial on the basics of RViz and Gazebo. All the code which is requi
 
 ## Getting Started
 
-I believe the best way to learn something is through having exampls of it and playing around with it. This tutorial will install a working version of Turtlebot3. We will be working with the source code and thus you will be able to change and modify the code to see what happens.
+I believe the best way to learn something is through having examples of it and playing around with it. This tutorial will install a working version of Turtlebot3. We will be working with the source code, and thus you will be able to change and modify the code to see what happens.
 
 This tutorial is split into three main sections:
 
@@ -12,7 +12,7 @@ This tutorial is split into three main sections:
 * Instalation
 * Examples
 
-The examples are taken from working knowledge of ROS and from the tutorials described in the **Acknowledgement** section. The following examples have been given:
+The examples are taken from working knowledge of ROS and the tutorials described in the **Acknowledgement** section. The following examples have been given:
 
 * Running the Simulator
 * Viewing Sensor Data
@@ -45,7 +45,7 @@ You will also need to make sure you have git installed. You can install [Git](ht
 $ sudo apt-get install git
 ```
 
-Next make a ROS workspace. This will contain all the code you are working on.
+Next, make a ROS workspace. This will contain all the code you are working on.
 
 ```
 $ mkdir -p ~/catkin_ws/src
@@ -75,11 +75,11 @@ source ~/catkin_ws/devel/setup.bash
 
 ## Examples
 
-Now we have the source code lets see how we are able to get it up and running.
+Now we have the source code lets see how we can get it up and running.
 
 ### Running the Simulator
 
-[Gazebo](http://gazebosim.org/) is a physics engine in which we will run our simulations. Before executing the simulation we need to specifiy the model of the turtlebot. This is due to the launch file ```turtlebot3_empty_world.launch``` reading the environment variable. The line where it reads the environment variable is shown below:
+[Gazebo](http://gazebosim.org/) is a physics engine in which we will run our simulations. Before executing the simulation, we need to specify the model of the turtlebot. This is due to the launch file ```turtlebot3_empty_world.launch``` reading the environment variable. The line where it reads the environment variable is shown below:
 
 ```
 <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
@@ -91,9 +91,9 @@ We will notice you can choice between 3 different models:
 * waffle
 * waffle_pi
 
-We will use the waffle_pi for the rest of this tutorial. **Note:** remember that enviroment variables don't carry over terminals and so will need to be reinitilized in each terminal. Another solution would be to include this in your bashrc file. 
+We will use the waffle_pi for the rest of this tutorial. **Note:** remember that environment variables don't carry over terminals and so will need to be reinitialized in each terminal. Another solution would be to include this in your bashrc file. 
 
-Finally lets launch the simulation using the following code:
+Finally, let's launch the simulation using the following code:
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
@@ -102,15 +102,13 @@ $ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
 
 The [Gazebo](http://gazebosim.org/) simulator should open with the following screen:
 
-
 ![Gazebo simulator of empty world with turtlebot in the middle](images/raw_gazebo.png)
 
-
-**Note:** How to create the turtlebot model is out of scope of this tutorial. However for more information view the file ```/catkin_ws/src/turtlebot3/turtlebot3_description/urdf/turtlebot3_waffle_pi.gazebo.xacro```
+**Note:** How to create the turtlebot model is out of the scope of this tutorial. However for more information view the file ```/catkin_ws/src/turtlebot3/turtlebot3_description/urdf/turtlebot3_waffle_pi.gazebo.xacro```
 
 ### Viewing Sensor Data
 
-Now that we are able to place the robot in the simulation. Lets figure out how we can access and inspect the sensor data. We can inspect the data using a new terminal. Lets first see what data our robot is publishing:
+Now that we can place the robot in the simulation. Let's figure out how we can access and inspect the sensor data. We can inspect the data using a new terminal. Lets first see what data our robot is publishing:
 
 ```
 $ rostopic list
@@ -122,7 +120,7 @@ Lets then see what the scan data comprises of.
 $ rostopic info /scan
 ```
 
-We will first notice that it is for type [sensor_msgs/LaserScan](http://docs.ros.org/melodic/api/sensor_msgs/html/msg/LaserScan.html). Looking at this documentation we can see what all the different data we should be able to access. **Note** you should find that the data published in this topic matches with the description of the laser scanner in the robots description ```/catkin_ws/src/turtlebot3/turtlebot3_description/urdf/turtlebot3_waffle_pi.gazebo.xacro```
+We will first notice that it is for type [sensor_msgs/LaserScan](http://docs.ros.org/melodic/api/sensor_msgs/html/msg/LaserScan.html). Looking at this documentation, we can see what all the different data we should be able to access. **Note** you should find that the data published in this topic matches with the description of the laser scanner in the robots description ```/catkin_ws/src/turtlebot3/turtlebot3_description/urdf/turtlebot3_waffle_pi.gazebo.xacro```
 
 We can double check its publishing correctly using:
 
@@ -134,7 +132,7 @@ Running this command you should see this output:
 
 ![The scan topics data, with all values set to inf](images/scan_data.png)
 
-You will notice that all ranges are inf. That is because the robot is being simulated in an open world, with no obstacles in sight. Lets manually add an obstacle. To do that click the box icon in the toolbar of gazebo. Then move your mouse to somewhere infront of the robot and place the box. Your final world should look like this:
+You will notice that all ranges are inf. That is because the robot is being simulated in an open world, with no obstacles in sight. Lets manually add an obstacle. To do that click the box icon in the toolbar of gazebo. Then move your mouse to somewhere in front of the robot and place the box. Your final world should look like this:
 
 ![Robot and box placed inside a Gazebo world](images/add_box.png)
 
@@ -143,7 +141,7 @@ Checking the laser scanner topic again we should notice that the output has chan
 ![The scan topics data, with readings from the block](images/scan_new.png)
 
 
-Lets try and visualize the data in RViz. To open RViz we can run the following command
+Let's try and visualize the data in RViz. To open RViz we can run the following command
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
@@ -154,11 +152,11 @@ We should see RViz launch as seen below:
 
 ![RViz launched which is able to display the data](images/rviz.png)
 
-RViz is also able to display other data. For instance we can view the camera data by selecting the camera topic in RViz. The output of this would look like the image shown below:
+RViz is also able to display other data. For instance, we can view the camera data by selecting the camera topic in RViz. The output of this would look like the image shown below:
 
 ![The camera data from RViz showing the output of the robot](images/camera.png)
 
-Lets see if we can understand what we did. The first thing we launched was the ```turltebot3_empty_world.launch```. Inside that file we will see the following:
+Let's see if we can understand what we did. The first thing we launched was the ```turltebot3_empty_world.launch``` file. Inside that file we will see the following:
 
 ```
 <launch>
@@ -182,14 +180,14 @@ Lets see if we can understand what we did. The first thing we launched was the `
 </launch>
 ```
 
-We can see we first create an arguement named model. With a starting position 0,0,0. If we wanted to move the robot we could change the starting position. The next include includes the ```empty_world.launch``` file. You can find this file in:
+We can see we first create an argument named model. With a starting position 0,0,0. If we wanted to move the robot we could change the starting position. The next include includes the ```empty_world.launch``` file. You can find this file in:
 
 ```
 $ cd /opt/ros/kinetic/share/gazebo_ros/launch/
 $ cat empty_world.launch
 ```
 
-Finally the gazebo node is launched. The second file is the customized RViz launch file ```turtlebot3_gazebo_rviz.launch```. Inside that file we will see the following:
+Finally, the gazebo node is launched. The second file is the customized RViz launch file ```turtlebot3_gazebo_rviz.launch```. Inside that file we will see the following:
 
 ```
 <launch>
@@ -203,10 +201,9 @@ Finally the gazebo node is launched. The second file is the customized RViz laun
 </launch>
 ```
 
-Inside this file we can see that we are launching the node ```rviz``` with a custom save file ```turtlebot3_gazebo_model.rviz```. Inside that is where all the correct setting have been checked which allow RViz to straight away know what you want to display. 
+Inside this file, we can see that we are launching the node ```rviz``` with a custom save file ```turtlebot3_gazebo_model.rviz```. Inside that is where all the correct setting have been checked which allow RViz to straight away know what you want to display. 
 
-
-Lets see if we can mimic this behaviour without using the launch file. Launch RViz by default:
+Let's see if we can mimic this behavior without using the launch file. Launch RViz by default:
 
 ```
 $ rosrun rviz rviz
@@ -220,7 +217,7 @@ Firstly change the Fixed Frame from map to odom. You can do this as shown in the
 
 ![Launching the basic version of RViz with fixed frame set to odom](images/fixed_frame.png)
 
-Next lets say we want to visualize the laser scan data. We can do that by clicking add on the bottom left and then selecting laser scan. This will open a dialog where you can select laser scan as shown below:
+Next, let's say we want to visualize the laser scan data. We can do that by clicking add on the bottom left and then selecting the laser scan. This will open a dialog where you can select laser scan as shown below:
 
 ![Adding a laser scan topic in RViz](images/laser_scan_add.png)
 
@@ -228,13 +225,13 @@ Once you had the laser scan topic, next you need to change the scan topic to ```
 
 ![Laser scan topic throwing an error](images/laser_scan_topic.png)
 
-The error relates to the state of the robot not being published and thus RViz is unable to transform the laser scan data into anything meaninful. We are able to solve this by launching a state publisher. The state publisher node can be launched using the following launch file.
+The error relates to the state of the robot not being published, and thus RViz is unable to transform the laser scan data into anything meaningful. We can solve this by launching a state publisher. The state publisher node can be launched using the following launch file.
 
 ```
 $ roslaunch turtlebot3_bringup turtlebot3_remote.launch
 ```
 
-After launching this file you should notice that the topic starts to successfully receive messages as shown below:
+After launching this file, you should notice that the topic starts to receive messages as shown below:
 
 
 ![RViz accepting laser scan messages](images/rviz_display.png)
@@ -245,7 +242,7 @@ Why did it do that? It publishes the coordinate transformation such as base_foot
 $ rostopic echo /tf_static
 ```
 
-How did we know that tf_static is published by robot_state_publisher. I used rqt_graph. This is another tool which we can use to vishualize how the ROS system is made. We can access rqt_graph using:
+How did we know that tf_static is published by robot_state_publisher. I used rqt_graph. This is another tool which we can use to visualize how the ROS system is made. We can access rqt_graph using:
 
 ```
 $ rosrun rqt_graph rqt_graph
@@ -258,7 +255,7 @@ Change the top left dropdown to nodes/topics(All). You should have the following
 
 ### Controlling the Robot in Simulation
 
-Lets now see how we could drive the robot around a room. To do this lets open a more complex world. I found which worlds I have available by inspecting the ```catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/launch``` folder.
+Lets now see how we could drive the robot around a room. To do this let's open a more complex world. I found which worlds I have available by inspecting the ```catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/launch``` folder.
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
@@ -279,20 +276,20 @@ You can now drive the robot around the simulation using the w,a,s,d keys. You sh
 
 ![Gazebo driving in the autorace world](images/autorace_drive.png)
 
-Lets see if we can visualize data while driving around. We will use the preconfigured rviz launch file.
+Let's see if we can visualize data while driving around. We will use the preconfigured rviz launch file.
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
 $ roslaunch turtlebot3_gazebo turtlebot3_gazebo_rviz.launch
 ```
 
-You should see the folowing output, notice how we can see the room using the laser scan data.
+You should see the following output, notice how we can see the room using the laser scan data.
 
 ![Visulizing the laser scan data while operating the turtlebot](images/autorace_rviz.png)
 
 ### Creating a Map
 
-We are also able to create maps using RViz and Gazebo. This example has an implementation of similtaneous localization and mapping [SLAM](https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping). Lets see how it works and if we can visualize the data in RViz. First lets open a more realistic world, one which we would probably try and map in the real world. Open a house world using:
+We are also able to create maps using RViz and Gazebo. This example has an implementation of simultaneous localization and mapping [SLAM](https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping). Let's see how it works and if we can visualize the data in RViz. First let's open a more realistic world, one which we would probably try and map in the real world. Open a house world using:
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
@@ -303,7 +300,7 @@ You should see the following world open in Gazebo:
 
 ![Gazebo house world](images/house.png)
 
-Lets launch the slam visualization
+Let's launch the slam visualization
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
@@ -314,17 +311,17 @@ We will notice that the robot is now creating a map object as well as displaying
 
 ![Gazebo house world with mapping running](images/init_map.png)
 
-Lets see what happens if we drive around the room. To drive launch the teleop package.
+Let's see what happens if we drive around the room. To drive the robot, launch the teleop package.
 
 ```
 $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
 ```
 
-After driving around for a while we should be left with a fully mapped out house as can be seen below:
+After driving around for a while, we should be left with a fully mapped out house as can be seen below:
 
 ![Gazebo house world with fully mapped out house](images/full_map.png)
 
-We can see we are able to map a house using our robot. For this tutorial I wont be going into the details of SLAM, however lets figure out how it was plotted to RViz. The first thing we will notice is that it is published to a ```/map``` topic. Lets see what type of message it is publishing:
+We can see we can map a house using our robot. For this tutorial I won't be going into the details of SLAM, however, let's figure out how it was plotted to RViz. The first thing we will notice is that it is published to a ```/map``` topic. Let's see what type of message it is publishing:
 
 ```
 $ rostopic info /map
@@ -362,7 +359,7 @@ Running this will get you the following output:
 
 ### Argument Passing using a Launch File
 
-We are able to give our launch files arguments. Lets look at what kind of arguments we are able to send the empty_world launch file. I have attached the launch file below:
+We can give our launch files arguments. Let's look at what kind of arguments we can send the empty_world launch file. I have attached the launch file below:
 
 ```
 <launch>
@@ -386,17 +383,17 @@ We are able to give our launch files arguments. Lets look at what kind of argume
 </launch>
 ```
 
-You will notice there are two sets of arguments. The first set are the arguments for this launch file, the second set of arguements are for another launch file that this launch files calls. To pass in your own value for the arguments run the following command:
+You will notice there are two sets of arguments. The first set are the arguments for this launch file, the second set of arguments are for another launch file that this launch file calls. To pass in your own value for the arguments run the following command:
 
 ```
 $ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch z_pos:="2.0" x_pos:="5.0"
 ```
 
-You should see the following output as shown in the figure below. **Note** the robot will drop due to gravity of the simulation.
+You should see the following output as shown in the figure below. **Note** the robot will drop due to the gravity in the simulation.
 
 ![Robot in an empty world with an offset starting position](images/robot_offset.png)
 
-You will now notice that the robot now spawns 2 meters off the ground and 5 meters in the X direction. Lets say we wanted to change the world using an argument how could we go about doing that? We would have to add an arguement to the launch file which is then passed to the ```empty_world``` launch file. To do this add an arguement named ```w_name``` to your launch file. Set the default value of ```w_name``` to the exact same value of ```world_name``` in he ```empty_world``` launch file. We then can pass ```w_name``` to ```world_name``` by setting its value to that of ```w_name```. This is how your launch file should look after the changes.
+You will now notice that the robot now spawns 2 meters off the ground and 5 meters in the X direction. Let's say we wanted to change the world using an argument how could we go about doing that? We would have to add an argument to the launch file which is then passed to the ```empty_world``` launch file. To do this add an argument named ```w_name``` to your launch file. Set the default value of ```w_name``` to the exact same value of ```world_name``` in he ```empty_world``` launch file. We then can pass ```w_name``` to ```world_name``` by setting its value to that of ```w_name```. This is how your launch file should look after the changes.
 
 ```
 <launch>
@@ -479,7 +476,7 @@ Lets take a look at the world files. World files are in a SDF format, such as th
 </sdf>
 ```
 
-Lets see if we can add our own components to the empty world. Lets create our own world. To do this we need to copy ```empty.world``` to a new file which we will add the components to. To do this run:
+Let's see if we can add our own components to the empty world. Let's create our own world. To do this, we need to copy ```empty.world``` to a new file which we will add the components to. To do this run:
 
 ```
 $ cp catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty.world catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/worlds/empty_gas.world
@@ -517,7 +514,7 @@ Your ```empty_gas.world``` should look something like this now.
       ...
 ```
 
-Lets see what that looks like. Lets run the code which launches gazebo with the empty world.
+Let's see what that looks like. Let's run the code which launches gazebo with the empty world.
 
 ```
 $ export TURTLEBOT3_MODEL=waffle_pi
@@ -532,7 +529,7 @@ You can find a list of other models by selecting the insert tab in Gazebo and lo
 
 ![Finding a list of models to insert into Gazebo](images/models.png)
 
-Similarly we are able to add basic objects into our simulation using a similar method. Lets add a block into our newly created gas world. We can do that by creating a model and adding it to the world file. A block can be added using
+Similarly, we can add basic objects into our simulation using a similar method. Let's add a block into our newly created gas world. We can do that by creating a model and adding it to the world file. A block can be added using:
 
 ```
 ...
@@ -576,7 +573,7 @@ You should notice now the gas station has a block spawned inside it as shown bel
 
 ## Acknowledgments
 
-Please note this work was a summary from all these sources. Please refer to them for more detail.
+Please note this work was a summary of all these sources. Please refer to them for more detail.
 
 * http://emanual.robotis.com/docs/en/platform/turtlebot3/overview/
 * http://gazebosim.org/tutorials?tut=ros_roslaunch&cat=connect_ros
